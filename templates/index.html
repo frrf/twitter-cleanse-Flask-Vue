@@ -41,8 +41,7 @@
           </div>
           <!-- User Input Submit-->
         </label>
-        <button @click="sendToAPI('http://ec2-54-241-84-237.us-west-1.compute.amazonaws.com:5000/sendToFlaskReturnToVue', {handle: target_handle, term: termToSearch}); showLoading();" id="btn">Search</button>
-        <!-- <button @click="sendToAPI('http://localhost:5000/sendToFlaskReturnToVue', {handle: target_handle, term: termToSearch}); showLoading();" id="btn">Search</button> -->
+        <button @click="sendToAPI('http://localhost:5000/sendToFlaskReturnToVue', {handle: target_handle, term: termToSearch}); showLoading();" id="btn">Search</button>
       </div>
     </main>
 
