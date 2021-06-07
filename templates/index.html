@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <title>Twitter Cleanse</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Start of Vue mounting point -->
+    <!-- Loader -->
+    <div class="loader" v-bind:style='{"display": (showLoader ? "flex" : "none")}'>
+      <div class="loader-content">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19.633,7.997c0.013,0.175,0.013,0.349,0.013,0.523c0,5.325-4.053,11.461-11.46,11.461c-2.282,0-4.402-0.661-6.186-1.809	c0.324,0.037,0.636,0.05,0.973,0.05c1.883,0,3.616-0.636,5.001-1.721c-1.771-0.037-3.255-1.197-3.767-2.793	c0.249,0.037,0.499,0.062,0.761,0.062c0.361,0,0.724-0.05,1.061-0.137c-1.847-0.374-3.23-1.995-3.23-3.953v-0.05	c0.537,0.299,1.16,0.486,1.82,0.511C3.534,9.419,2.823,8.184,2.823,6.787c0-0.748,0.199-1.434,0.548-2.032	c1.983,2.443,4.964,4.04,8.306,4.215c-0.062-0.3-0.1-0.611-0.1-0.923c0-2.22,1.796-4.028,4.028-4.028	c1.16,0,2.207,0.486,2.943,1.272c0.91-0.175,1.782-0.512,2.556-0.973c-0.299,0.935-0.936,1.721-1.771,2.22	c0.811-0.088,1.597-0.312,2.319-0.624C21.104,6.712,20.419,7.423,19.633,7.997z"/></svg>
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+
+    <!-- User Input -->
+    <main>
+      <div class="wrap">
+        <label for="twitter_handle">
+          Twitter Handle
+          <div class="handle_input_area">
+            <input v-model="target_handle" type="text" name="target_handle_text" id="target_handle" placeholder="Enter twitter handle" required>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12,2C6.486,2,2,6.486,2,12s4.486,10,10,10c1.466,0,2.961-0.371,4.442-1.104l-0.885-1.793C14.353,19.698,13.156,20,12,20 c-4.411,0-8-3.589-8-8s3.589-8,8-8s8,3.589,8,8v1c0,0.692-0.313,2-1.5,2c-1.396,0-1.494-1.819-1.5-2V8h-2v0.025 C14.162,7.391,13.13,7,12,7c-2.757,0-5,2.243-5,5s2.243,5,5,5c1.45,0,2.748-0.631,3.662-1.621C16.186,16.269,17.07,17,18.5,17 c2.273,0,3.5-2.061,3.5-4v-1C22,6.486,17.514,2,12,2z M12,15c-1.654,0-3-1.346-3-3s1.346-3,3-3s3,1.346,3,3S13.654,15,12,15z"/></svg>
+          </div>
+          
+        </label>
+        <br>
+        <!-- User Input -->
+        <label for="term_to_search">
+          Search
+          <div class="handle_input_area">
+            <input v-model="termToSearch" type="text" name="term_to_search_text" id="term_to_search" placeholder="Enter term or phrase" required>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10,18c1.846,0,3.543-0.635,4.897-1.688l4.396,4.396l1.414-1.414l-4.396-4.396C17.365,13.543,18,11.846,18,10 c0-4.411-3.589-8-8-8s-8,3.589-8,8S5.589,18,10,18z M10,4c3.309,0,6,2.691,6,6s-2.691,6-6,6s-6-2.691-6-6S6.691,4,10,4z"/></svg>
+          </div>
+          <!-- User Input Submit-->
+        </label>
+        <button @click="sendToAPI('http://ec2-54-241-84-237.us-west-1.compute.amazonaws.com:5000/sendToFlaskReturnToVue', {handle: target_handle, term: termToSearch}); showLoading();" id="btn">Search</button>
+        <!-- <button @click="sendToAPI('http://localhost:5000/sendToFlaskReturnToVue', {handle: target_handle, term: termToSearch}); showLoading();" id="btn">Search</button> -->
+      </div>
+    </main>
+
+    <!-- User Output -->
+    <section class="example" id="doc">
+      <div id="container" class="display-none">{{target_handle_tweet_id}}</div>
+      
+      <div id="print_tweet_area">
+        <!-- Hidden for use by JS query selector -->
+        <div v-if="termExists != false"> 
+          <span class="display-none" v-for="item in arrayOfTweetIDs" :key="item">
+            {{item}}
+          </span>
+        </div>
+        <div v-else> 
+          <h1>{{target_handle}} has no links to searched word: {{termToSearch}}</h1> 
+        </div>
+      </div>
+    </section>
+
+    <!-- end of id="app"/ Vue mounting point  -->
+  </div> 
+
+  <!-- Twitter widget CDN -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <!-- Vue CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <!-- <script src="/static/scripts/app.js"></script> -->
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        target_handle: '',
+        termToSearch: '',
+        arrayOfTweetIDs: '',
+        termExists: true,
+        showLoader: false
+      },
+      methods: {
+        sendToAPI: async function postData(url = '', data = {}) {
+          const response = await fetch(url, {
+            method: 'POST',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin', 
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer', 
+            body: JSON.stringify(data)
+          });
+          let objectFromApi;
+          objectFromApi = await response.json();
+          this.arrayOfTweetIDs = Object.values(objectFromApi)
+
+          // check if returned object is produced from the api failing the search 
+          if (this.arrayOfTweetIDs[0] === "fail") {
+            this.termExists = false;
+          }
+          else {
+            this.generateFeed();
+          }
+        },
+        generateFeed: function() {
+          const multipleIDS = this.arrayOfTweetIDs;
+          const tweetContainer = document.getElementById('print_tweet_area');
+          tweetContainer.innerHTML = "";
+          const tweetID = document.getElementById('container').innerText;
+  
+          for(let i = 0; i < multipleIDS.length; i++) {
+            twttr.widgets.createTweet(multipleIDS[i],tweetContainer);
+          }
+          setTimeout(() => { this.showLoader = false; }, 5000);
+        },
+        showLoading: function() {
+          if (this.target_handle !== "" && this.termToSearch !== "") {
+            this.showLoader = true;
+          } 
+          else
+          {
+            this.showLoader = false;
+          }
+        }
+      }
+    })
+
+    
+  </script>
+</body>
+</html>
